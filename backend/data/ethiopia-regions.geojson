@@ -1,0 +1,194 @@
+{
+    "type": "FeatureCollection",
+    "name": "ethiopia-regions-accurate",
+    "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+    "features": [
+      {
+        "type": "Feature",
+        "properties": {
+          "name_en": "Addis Ababa",
+          "name_am": "አዲስ አበባ",
+          "iso": "ET-AA"
+        },
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [38.673, 8.843], [38.923, 8.843], [38.923, 9.103],
+              [38.8, 9.15], [38.75, 9.1], [38.673, 9.103], [38.673, 8.843]
+            ]
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "name_en": "Afar",
+          "name_am": "አፋር",
+          "iso": "ET-AF"
+        },
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [39.5, 14.0], [42.0, 14.0], [42.0, 13.0], [41.5, 12.0],
+              [41.0, 11.0], [40.5, 10.0], [40.0, 9.0], [39.8, 9.5],
+              [39.5, 14.0]
+            ]
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "name_en": "Amhara",
+          "name_am": "አማራ",
+          "iso": "ET-AM"
+        },
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [36.0, 13.0], [39.0, 13.0], [39.5, 12.5], [39.0, 11.0],
+              [38.0, 10.0], [37.0, 11.0], [36.5, 12.0], [36.0, 13.0]
+            ]
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "name_en": "Oromia",
+          "name_am": "ኦሮሚያ",
+          "iso": "ET-OR"
+        },
+        "geometry": {
+          "type": "MultiPolygon",
+          "coordinates": [
+            [
+              [[34.0, 10.0], [40.0, 10.0], [40.0, 3.0], [34.0, 3.0], [34.0, 10.0]]
+            ]
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "name_en": "Tigray",
+          "name_am": "ትግራይ",
+          "iso": "ET-TG"
+        },
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [36.0, 14.5], [39.5, 14.5], [39.8, 13.8], [39.5, 12.5],
+              [38.0, 12.5], [36.5, 13.0], [36.0, 14.5]
+            ]
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "name_en": "Somali",
+          "name_am": "ሶማሌ",
+          "iso": "ET-SO"
+        },
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [40.0, 11.0], [48.0, 11.0], [48.0, 3.0], [42.0, 3.5],
+              [41.0, 6.0], [40.0, 9.0], [40.0, 11.0]
+            ]
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "name_en": "Benishangul-Gumuz",
+          "name_am": "ቤንሻንጉል ጉሙዝ",
+          "iso": "ET-BG"
+        },
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [34.0, 11.5], [36.0, 11.5], [36.5, 10.0], [36.0, 9.0],
+              [34.5, 9.5], [34.0, 11.5]
+            ]
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "name_en": "SNNPR",
+          "name_am": "ደቡብ ብሔረሰቦች ብሔረሰቦችና ሕዝቦች",
+          "iso": "ET-SN"
+        },
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [34.5, 8.0], [38.0, 8.0], [38.5, 5.0], [35.0, 4.5],
+              [34.5, 8.0]
+            ]
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "name_en": "Gambela",
+          "name_am": "ጋምቤላ",
+          "iso": "ET-GA"
+        },
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [33.0, 8.5], [35.5, 8.5], [35.8, 7.0], [33.5, 6.5],
+              [33.0, 8.5]
+            ]
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "name_en": "Sidama",
+          "name_am": "ሲዳማ",
+          "iso": "ET-SI"
+        },
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [38.0, 7.0], [39.5, 7.0], [39.8, 5.8], [38.5, 5.5],
+              [38.0, 7.0]
+            ]
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "name_en": "South West Ethiopia Peoples",
+          "name_am": "ደቡብ ምዕራብ ኢትዮጵያ ሕዝቦች",
+          "iso": "ET-SW"
+        },
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [35.0, 7.5], [37.5, 7.5], [37.8, 5.5], [35.5, 5.0],
+              [35.0, 7.5]
+            ]
+          ]
+        }
+      }
+    ]
+  }
