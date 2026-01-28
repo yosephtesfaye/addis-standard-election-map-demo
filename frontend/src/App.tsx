@@ -20,11 +20,22 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedRegion, setSelectedRegion] = useState<string>('');
+  const API_BASE_URL = 'http://localhost:5000';
   const [authLoading, setAuthLoading] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
   const [authToken, setAuthToken] = useState<string>('');
   const [authUser, setAuthUser] = useState<{ id: number; username: string; role: string } | null>(null);
   const [credentials, setCredentials] = useState({ username: '', password: '', role: 'REPORTER' });
+  const [articles, setArticles] = useState<any[]>([]);
+  const [articlesLoading, setArticlesLoading] = useState(false);
+  const [articlesError, setArticlesError] = useState<string | null>(null);
+  const [statusFilter, setStatusFilter] = useState<string>('');
+  const [articleForm, setArticleForm] = useState({ title: '', content: '' });
+  const [selectedArticleId, setSelectedArticleId] = useState<number | null>(null);
+
+  const handleArticleChange = (field: string, value: string) => {
+    setArticleForm(prev => ({ ...prev, [field]: value }));
+  };
 
   const handleAuthChange = (field: string, value: string) => {
     setCredentials(prev => ({ ...prev, [field]: value }));
@@ -34,7 +45,7 @@ function App() {
     setAuthLoading(true);
     setAuthError(null);
     try {
-      const res = await fetch('http://localhost:5000/register', {
+      const res = await fetch(`${API_BASE_URL}/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(credentials),
@@ -55,7 +66,7 @@ function App() {
     setAuthLoading(true);
     setAuthError(null);
     try {
-      const res = await fetch('http://localhost:5000/login', {
+      const res = await fetch(`${API_BASE_URL}/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username: credentials.username, password: credentials.password }),
@@ -76,7 +87,7 @@ function App() {
 
   // Fetch data from backend
   useEffect(() => {
-    fetch('http://localhost:5000/api/regions')
+    fetch(`${API_BASE_URL}/api/regions`)
       .then(res => {
         if (!res.ok) throw new Error('Failed to load regions data');
         return res.json();
@@ -90,6 +101,105 @@ function App() {
         setLoading(false);
       });
   }, []);
+
+  const loadArticles = async (token: string, status?: string) => {
+    setArticlesLoading(true);
+    setArticlesError(null);
+    try {
+      const url = new URL(`${API_BASE_URL}/api/articles`);
+      if (status) url.searchParams.set('status', status);
+      const res = await fetch(url.toString(), {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.error || 'Failed to load articles');
+      }
+      const data = await res.json();
+      setArticles(Array.isArray(data) ? data : []);
+    } catch (err: any) {
+      setArticlesError(err.message);
+    } finally {
+      setArticlesLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!authToken) return;
+    loadArticles(authToken, statusFilter || undefined);
+  }, [authToken, statusFilter]);
+
+  const handleCreateArticle = async () => {
+    if (!authToken) return;
+    setArticlesError(null);
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/articles`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${authToken}`,
+        },
+        body: JSON.stringify(articleForm),
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.error || 'Failed to create article');
+      }
+      setArticleForm({ title: '', content: '' });
+      await loadArticles(authToken, statusFilter || undefined);
+    } catch (err: any) {
+      setArticlesError(err.message);
+    }
+  };
+
+  const handleSelectArticle = (article: any) => {
+    setSelectedArticleId(article.id);
+    setArticleForm({ title: article.title || '', content: article.content || '' });
+  };
+
+  const handleUpdateArticle = async () => {
+    if (!authToken || !selectedArticleId) return;
+    setArticlesError(null);
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/articles/${selectedArticleId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${authToken}`,
+        },
+        body: JSON.stringify(articleForm),
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.error || 'Failed to update article');
+      }
+      await loadArticles(authToken, statusFilter || undefined);
+    } catch (err: any) {
+      setArticlesError(err.message);
+    }
+  };
+
+  const handleStatusChange = async (id: number, nextStatus: string) => {
+    if (!authToken) return;
+    setArticlesError(null);
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/articles/${id}/status`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${authToken}`,
+        },
+        body: JSON.stringify({ status: nextStatus }),
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.error || 'Failed to update status');
+      }
+      await loadArticles(authToken, statusFilter || undefined);
+    } catch (err: any) {
+      setArticlesError(err.message);
+    }
+  };
 
   // Initialize map once so it renders even if data fails to load
   useEffect(() => {
@@ -285,6 +395,95 @@ function App() {
             </div>
           )}
         </div>
+      </div>
+
+      {/* Articles Panel – top-right */}
+      <div
+        style={{
+          position: 'absolute',
+          top: 10,
+          right: 10,
+          zIndex: 1000,
+          background: 'white',
+          padding: '12px 16px',
+          borderRadius: '8px',
+          boxShadow: '0 0 10px rgba(0,0,0,0.2)',
+          width: 320,
+          maxHeight: '90vh',
+          overflowY: 'auto',
+        }}
+      >
+        <div style={{ fontWeight: 600, marginBottom: 8 }}>Articles</div>
+        {!authToken && <div style={{ fontSize: 12, color: '#666' }}>Login to manage articles.</div>}
+        {authToken && (
+          <>
+            <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
+              <select
+                value={statusFilter}
+                onChange={e => setStatusFilter(e.target.value)}
+                style={{ flex: 1, padding: 6, borderRadius: 4, border: '1px solid #ccc' }}
+              >
+                <option value="">All</option>
+                <option value="DRAFT">DRAFT</option>
+                <option value="REVIEW">REVIEW</option>
+                <option value="APPROVED">APPROVED</option>
+              </select>
+              <button onClick={() => loadArticles(authToken, statusFilter || undefined)}>Refresh</button>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 12 }}>
+              <input
+                type="text"
+                placeholder="Title"
+                value={articleForm.title}
+                onChange={e => handleArticleChange('title', e.target.value)}
+                style={{ padding: 6, borderRadius: 4, border: '1px solid #ccc' }}
+              />
+              <textarea
+                placeholder="Content"
+                value={articleForm.content}
+                onChange={e => handleArticleChange('content', e.target.value)}
+                rows={3}
+                style={{ padding: 6, borderRadius: 4, border: '1px solid #ccc', resize: 'vertical' }}
+              />
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button onClick={handleCreateArticle} style={{ flex: 1 }}>Create</button>
+                <button
+                  onClick={handleUpdateArticle}
+                  disabled={!selectedArticleId}
+                  style={{ flex: 1 }}
+                >
+                  Update
+                </button>
+              </div>
+              {selectedArticleId && (
+                <div style={{ fontSize: 11, color: '#555' }}>Editing article #{selectedArticleId}</div>
+              )}
+            </div>
+
+            {articlesLoading && <div style={{ fontSize: 12 }}>Loading articles...</div>}
+            {articlesError && <div style={{ fontSize: 12, color: 'red' }}>{articlesError}</div>}
+            {!articlesLoading && !articles.length && (
+              <div style={{ fontSize: 12, color: '#666' }}>No articles found.</div>
+            )}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {articles.map(article => (
+                <div key={article.id} style={{ border: '1px solid #eee', padding: 8, borderRadius: 6 }}>
+                  <div style={{ fontWeight: 600 }}>{article.title}</div>
+                  <div style={{ fontSize: 12, color: '#666' }}>
+                    {article.status} • {article.author?.username || 'Unknown'}
+                  </div>
+                  <div style={{ fontSize: 12, marginTop: 4 }}>{article.content}</div>
+                  <div style={{ display: 'flex', gap: 6, marginTop: 6, flexWrap: 'wrap' }}>
+                    <button onClick={() => handleSelectArticle(article)}>Edit</button>
+                    <button onClick={() => handleStatusChange(article.id, 'REVIEW')}>To Review</button>
+                    <button onClick={() => handleStatusChange(article.id, 'APPROVED')}>Approve</button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
       </div>
 
       {/* Map container */}
