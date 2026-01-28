@@ -11,6 +11,13 @@ Prototype for GIS & Software Developer position at Addis Standard.
 - Legend for color scale (bonus)
 - INMS mini-module: auth + role-based article workflow (Task 2)
 
+## INMS Mini-Module (Task 2)
+- Authentication: register/login, JWT-based sessions
+- Role-based access: Reporter, Editor, Admin
+- Articles: create, edit, list with status filter
+- Status workflow: DRAFT → REVIEW → APPROVED
+- REST API with basic validation and error handling
+
 ## How to Run
 1. Backend
    cd backend
